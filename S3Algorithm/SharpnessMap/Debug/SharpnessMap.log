@@ -1,0 +1,12 @@
+﻿Build started 2. 11. 2017 22:26:47.
+     1>Project "C:\Users\User\Documents\GitHub\Praca\S3Algorithm\SharpnessMap\SharpnessMap.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Debug\SharpnessMap.exe" /INCREMENTAL /NOLOGO C:\Users\User\Documents\GitHub\Praca\S3Algorithm\\Debug\S3Algorithm.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Debug\SharpnessMap.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Debug\SharpnessMap.lib" /MACHINE:X86 Debug\SharpnessMap.obj
+         Debug\stdafx.obj
+            Creating library C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Debug\SharpnessMap.lib and object C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Debug\SharpnessMap.exp
+         SharpnessMap.vcxproj -> C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Debug\SharpnessMap.exe
+     1>Done Building Project "C:\Users\User\Documents\GitHub\Praca\S3Algorithm\SharpnessMap\SharpnessMap.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.46

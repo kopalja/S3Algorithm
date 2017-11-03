@@ -1,0 +1,34 @@
+BYTE* S3::PixelSort( Image *image )
+{
+	int count[256];
+	for (int i = 0; i < 256; i++) count[i] = 0;
+	int baseIndex[256];
+	BYTE *ans = new BYTE[image->size];
+
+	for (int i = 0; i < image->size; i++)
+	{
+		count[image->buffer[i]]++;
+	}
+	baseIndex[0] = 0;
+	for (int i = 1; i < 256; i++)
+	{
+		baseIndex[i] = baseIndex[i - 1] + count[i - 1];
+	}
+	for (int i = 0; i < image->size; i++)
+	{
+		ans[baseIndex[image->buffer[i]]++] = image->buffer[i];
+	}
+	return ans;
+}
+
+
+double S3::Sharpness( BYTE *pixels, int length)
+{
+	int size = length * 100;
+	int ans = 0;
+	for (int i = 1; i <= length; i++)
+	{
+		ans += pixels[size - i];
+	}
+	return ans / length;
+}
