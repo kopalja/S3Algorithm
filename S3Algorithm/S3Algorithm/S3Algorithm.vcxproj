@@ -82,6 +82,7 @@
     <ClInclude Include="ImageHandler.h" />
     <ClInclude Include="LargeBlock.h" />
     <ClInclude Include="LinearRegression.h" />
+    <ClInclude Include="MagnitudeSpectrum.h" />
     <ClInclude Include="RadialFrequency.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="S1.h" />
@@ -96,6 +97,7 @@
     <ClCompile Include="ImageHandler.cpp" />
     <ClCompile Include="LargeBlock.cpp" />
     <ClCompile Include="LinearRegression.cpp" />
+    <ClCompile Include="MagnitudeSpectrum.cpp" />
     <ClCompile Include="RadialFrequency.cpp" />
     <ClCompile Include="S1.cpp" />
     <ClCompile Include="S2.cpp" />

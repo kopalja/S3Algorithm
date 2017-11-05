@@ -5,7 +5,6 @@
 #include "FFT2D.h"
 #include "S1.h"
 #include "S2.h"
-#include "RadialFrequency.h"
 
 enum ResultType
 {

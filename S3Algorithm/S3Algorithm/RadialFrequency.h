@@ -20,6 +20,7 @@ private:
 	double** CountRealDistances( __in int size );
 	double* SortDifferentDistances( double **realDistance, int size );
 	void SetIntDistances( __in double **realDistance, __in double *differentDistances, __in int size );
+	void ShiftDistances();
 	void CountOccurrences( int size );
 
 	int numOfDifferentValues;

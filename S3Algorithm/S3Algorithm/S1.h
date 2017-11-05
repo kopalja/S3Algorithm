@@ -16,8 +16,8 @@ public:
 		);
 
 private:
-	void CountFirstRow(LargeBlock* rowToCount, Image *gray);
-	void CountRow(double **pixelValue, LargeBlock* rowToCount, LargeBlock *rowAbove, Image *gray, int y);
+	void CountFirstRow( LargeBlock* rowToCount, Image *gray, MagnitudeSpectrum *pMagnitude );
+	void CountRow( double **pixelValue, LargeBlock* rowToCount, LargeBlock *rowAbove, Image *gray, int y, MagnitudeSpectrum *pMagnitude );
 	inline void SetBuffer(LargeBlock* row1, LargeBlock* row2, LargeBlock* row3, LargeBlock* row4, Image *result, int y);
 	inline void SetRowBuffer(LargeBlock **blocks, int blocksLength, Image *result, int y);
 	inline void SetPixelBlock(int color, Image *result, int index);
@@ -52,7 +52,7 @@ private:
 				}
 			}
 
-			if ( row[0].ContrastIsZerov( max, min, sum / 1024 ) ) row[i].finalValue = 0;
+			if ( row[0].ContrastIsZerov( max, min, sum / 1024, 2 ) ) row[i].finalValue = 0;
 			else row[i].finalValue = 255;
 		}
 	}

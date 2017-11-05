@@ -1,21 +1,18 @@
-﻿Build started 26. 10. 2017 10:30:32.
-     1>Project "C:\Users\User\Documents\GitHub\Praca\S3Algorithm\S3Algorithm\S3Algorithm.vcxproj" on node 2 (Build target(s)).
+﻿Build started 5. 11. 2017 16:31:59.
+     1>Project "C:\Users\User\Documents\GitHub\S3Algorithm\S3Algorithm\S3Algorithm\S3Algorithm.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\\" /AI"C:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Facades\\" /clr /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\S3Algorithm.pch" /Fo"Release\\" /Fd"Release\vc110.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.dll" /analyze- /errorReport:prompt /clr:nostdlib LargeBlock.cpp
-         LargeBlock.cpp
-     1>LargeBlock.cpp(31): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>LargeBlock.cpp(55): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>LargeBlock.cpp(167): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>LargeBlock.cpp(217): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-     1>LargeBlock.cpp(279): warning C4244: 'return' : conversion from 'double' to 'int', possible loss of data
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\\" /AI"C:\Program Files (x86)\Windows Kits\8.0\References\CommonConfiguration\Neutral" /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Facades\\" /clr /nologo /W3 /WX- /O2 /Oy- /D WIN32 /D NDEBUG /D _WINDLL /D _UNICODE /D UNICODE /EHa /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Release\S3Algorithm.pch" /Fo"Release\\" /Fd"Release\vc110.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.dll" /analyze- /errorReport:prompt /clr:nostdlib RadialFrequency.cpp
+         RadialFrequency.cpp
+     1>RadialFrequency.cpp(125): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Release\S3Algorithm.dll" /INCREMENTAL:NO /NOLOGO ole32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Release\S3Algorithm.pdb" /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /SAFESEH /DLL Release\app.res
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\User\Documents\GitHub\S3Algorithm\S3Algorithm\Release\S3Algorithm.dll" /INCREMENTAL:NO /NOLOGO ole32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\User\Documents\GitHub\S3Algorithm\S3Algorithm\Release\S3Algorithm.pdb" /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 /SAFESEH /DLL Release\app.res
          Release\AssemblyInfo.obj
          Release\Block.obj
          Release\FFT2D.obj
          Release\ImageHandler.obj
          Release\LargeBlock.obj
          Release\LinearRegression.obj
+         Release\MagnitudeSpectrum.obj
          Release\RadialFrequency.obj
          Release\S1.obj
          Release\S2.obj
@@ -23,10 +20,10 @@
          Release\S3Algorithm.obj
          Release\Stdafx.obj
          "Release\.NETFramework,Version=v4.5.AssemblyAttributes.obj"
-            Creating library C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Release\S3Algorithm.lib and object C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Release\S3Algorithm.exp
-         S3Algorithm.vcxproj -> C:\Users\User\Documents\GitHub\Praca\S3Algorithm\Release\S3Algorithm.dll
-     1>Done Building Project "C:\Users\User\Documents\GitHub\Praca\S3Algorithm\S3Algorithm\S3Algorithm.vcxproj" (Build target(s)).
+            Creating library C:\Users\User\Documents\GitHub\S3Algorithm\S3Algorithm\Release\S3Algorithm.lib and object C:\Users\User\Documents\GitHub\S3Algorithm\S3Algorithm\Release\S3Algorithm.exp
+         S3Algorithm.vcxproj -> C:\Users\User\Documents\GitHub\S3Algorithm\S3Algorithm\Release\S3Algorithm.dll
+     1>Done Building Project "C:\Users\User\Documents\GitHub\S3Algorithm\S3Algorithm\S3Algorithm\S3Algorithm.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.21
+Time Elapsed 00:00:02.49

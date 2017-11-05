@@ -1,13 +1,12 @@
 #include "stdafx.h"
 #include "S1.h"
 
-
 void S1::CreateS1( __in int fourierReduciton, __in bool skin, __in Image* pGrayImage, __out Image* pS1Image )
 {
 	_ASSERT( pGrayImage->width % 8 == 0 && pGrayImage->height % 8 == 0 );
 
-	LargeBlock::fourierReduction = fourierReduciton;
-	LargeBlock::skin = skin;
+	MagnitudeSpectrum *pMagnitude = new MagnitudeSpectrum( 32, fourierReduciton, skin );
+
 
 	numberOfBlocks = pGrayImage->width / 8 - 3;
 	int numberOfRows = pGrayImage->height / 8  - 3;
@@ -22,7 +21,7 @@ void S1::CreateS1( __in int fourierReduciton, __in bool skin, __in Image* pGrayI
 		pixelValue[i] = new double[8];
 	}
 
-	CountFirstRow( row1, pGrayImage );
+	CountFirstRow( row1, pGrayImage, pMagnitude );
 	//CR(row1, gray, 0 );
 	SetBuffer( row1, row4, row3, row2, pS1Image, 0 );
 
@@ -30,25 +29,25 @@ void S1::CreateS1( __in int fourierReduciton, __in bool skin, __in Image* pGrayI
 	{
 		if ( ( i & 3 ) == 0)
 		{
-			CountRow( pixelValue, row1, row4, pGrayImage, i );
+			CountRow( pixelValue, row1, row4, pGrayImage, i, pMagnitude );
 			//CR(row1, gray, i );
 			SetBuffer( row1, row4, row3, row2, pS1Image, i );
 		}
 		else if ( ( i & 3 ) == 1 )
 		{
-			CountRow( pixelValue, row2, row1, pGrayImage, i ); 
+			CountRow( pixelValue, row2, row1, pGrayImage, i, pMagnitude ); 
 			//CR(row2, gray, i );
 			SetBuffer( row2, row1, row4, row3, pS1Image, i );
 		}			
 		else if ( ( i & 3 ) == 2 )
 		{
-			CountRow( pixelValue, row3, row2, pGrayImage, i );
+			CountRow( pixelValue, row3, row2, pGrayImage, i, pMagnitude );
 			//CR(row3, gray, i );
 			SetBuffer( row3, row2, row1, row4, pS1Image, i );
 		}
 		else if ( ( i & 3 ) == 3 )
 		{
-			CountRow( pixelValue, row4, row3, pGrayImage, i );
+			CountRow( pixelValue, row4, row3, pGrayImage, i, pMagnitude );
 			//CR(row4, gray, i );
 			SetBuffer( row4, row3, row2, row1, pS1Image, i );
 		}
@@ -66,14 +65,14 @@ void S1::CreateS1( __in int fourierReduciton, __in bool skin, __in Image* pGrayI
 }
 
 
-void S1::CountFirstRow( LargeBlock* rowToCount, Image *gray )
+void S1::CountFirstRow( LargeBlock* rowToCount, Image *gray, MagnitudeSpectrum *pMagnitude )
 {
-	double **piexelValue = rowToCount[0].CountFirst( gray );
+	double **piexelValue = rowToCount[0].CountFirst( gray, pMagnitude );
 
 	for (int i = 1; i < numberOfBlocks; i++)
 	{
 		rowToCount[i].baseIndex = i * 8;
-		rowToCount[i].CountFirstInColumn( piexelValue, gray );
+		rowToCount[i].CountFirstInColumn( piexelValue, gray, pMagnitude );
 	}
 
 	for (int i = 0; i < 32; i++)
@@ -84,7 +83,7 @@ void S1::CountFirstRow( LargeBlock* rowToCount, Image *gray )
 }
 
 
-void S1::CountRow( double **pixelValue, LargeBlock* rowToCount, LargeBlock *rowAbove, Image *gray, int y )
+void S1::CountRow( double **pixelValue, LargeBlock* rowToCount, LargeBlock *rowAbove, Image *gray, int y, MagnitudeSpectrum *pMagnitude )
 {
 	for (int i = 0; i < numberOfBlocks; i++)
 	{
@@ -102,12 +101,12 @@ void S1::CountRow( double **pixelValue, LargeBlock* rowToCount, LargeBlock *rowA
 	}
 
 	rowToCount[0].baseIndex = y * 8 * gray->width;
-	rowToCount[0].CountFirstInRow( &rowAbove[0], gray );
+	rowToCount[0].CountFirstInRow( &rowAbove[0], gray, pMagnitude );
 
 	for (int i = 1; i < numberOfBlocks; i++)
 	{
 		rowToCount[i].baseIndex = y * 8 * gray->width + i * 8;
-		rowToCount[i].Count( pixelValue, &rowAbove[i], &rowToCount[i - 1], gray );
+		rowToCount[i].Count( pixelValue, &rowAbove[i], &rowToCount[i - 1], gray, pMagnitude );
 	}
 }
 

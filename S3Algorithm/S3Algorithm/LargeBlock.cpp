@@ -4,15 +4,11 @@
 
 using namespace std;
 
-RadialFrequency LargeBlock::radial( 32, 16 );
-FFT2D LargeBlock::fourier( 32 );
-LinearRegression LargeBlock::regression;
-UINT LargeBlock::fourierReduction;
-bool LargeBlock::skin;
+
 //--------------------First Row--------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------
 
-double** LargeBlock::CountFirst( Image *gray )
+double** LargeBlock::CountFirst( Image *gray, MagnitudeSpectrum *pMagnitude )
 {
 	baseIndex = 0;
 	double **pixelValue;
@@ -31,14 +27,14 @@ double** LargeBlock::CountFirst( Image *gray )
 	}
 	CountMMMDataFromPixelValue( pixelValue );
 
-	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024 ) ) finalValue = 0;
-	else finalValue = Magic( gray );
+	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
+	else finalValue = Magic( gray, pMagnitude );
 
 	return pixelValue;
 }
 
 
-void LargeBlock::CountFirstInColumn( double **pixelValue, Image *gray )
+void LargeBlock::CountFirstInColumn( double **pixelValue, Image *gray, MagnitudeSpectrum *pMagnitude )
 {
 	for (int y = 0; y < 32; y++)
 	{
@@ -55,8 +51,8 @@ void LargeBlock::CountFirstInColumn( double **pixelValue, Image *gray )
 	}
 	CountMMMDataFromPixelValue( pixelValue );
 
-	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024 ) ) finalValue = 0;
-	else finalValue = Magic( gray );
+	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
+	else finalValue = Magic( gray, pMagnitude );
 }
 
 
@@ -86,7 +82,7 @@ void LargeBlock::CountMMMDataFromPixelValue( double **pixelValue )
 }
 
 
-void LargeBlock::CountQuarterFromPixelValue(int quarterToCount, double **pixelValue)
+void LargeBlock::CountQuarterFromPixelValue( int quarterToCount, double **pixelValue )
 {
 	int yStart = 24;
 	if ( quarterToCount == 1 )
@@ -125,7 +121,7 @@ void LargeBlock::CountQuarterFromPixelValue(int quarterToCount, double **pixelVa
 
 
 
-void LargeBlock::CountFirstInRow( LargeBlock *above, Image *gray )
+void LargeBlock::CountFirstInRow( LargeBlock *above, Image *gray, MagnitudeSpectrum *pMagnitude )
 {
 	double **subBlock0 = new double*[32];
 	for (int i = 0; i < 32; i++)
@@ -167,8 +163,8 @@ void LargeBlock::CountFirstInRow( LargeBlock *above, Image *gray )
 
 	CountMMMDataFromAbove( above );
 
-	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024 ) ) finalValue = 0;
-	else finalValue = Magic( gray );
+	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
+	else finalValue = Magic( gray, pMagnitude );
 
 	for (int i = 0; i < 32; i++)
 	{
@@ -179,7 +175,7 @@ void LargeBlock::CountFirstInRow( LargeBlock *above, Image *gray )
 
 
 
-void LargeBlock::Count( double** pixelValue, LargeBlock *above, LargeBlock *left, Image *gray )
+void LargeBlock::Count( double** pixelValue, LargeBlock *above, LargeBlock *left, Image *gray, MagnitudeSpectrum *pMagnitude )
 {
 	int baseIndexOfCounting = baseIndex + ( 24 * gray->width ) + 24;
 
@@ -217,8 +213,8 @@ void LargeBlock::Count( double** pixelValue, LargeBlock *above, LargeBlock *left
 
 	CountMMMDataFromAbove( above );
 
-	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024 ) ) finalValue = 0;
-	else finalValue = Magic( gray );
+	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
+	else finalValue = Magic( gray, pMagnitude );
 }
 
 
@@ -245,42 +241,38 @@ void LargeBlock::CountMMMDataFromAbove( LargeBlock *above )
 
 
 
-int LargeBlock::Magic( Image *grayImage )
+inline int LargeBlock::Magic( Image *grayImage, MagnitudeSpectrum *pMagnitude )
 {
 	int size = 32;
 	int vectorLength = 4;
-	for (int y = 0; y < size; y++)
-	{
-		for (int x = 0; x < size; x++)
-		{
-			fourier.complex[x][y].Real = grayImage->buffer[ baseIndex + y * grayImage->width + x ];
-			fourier.complex[x][y].Imaginary = 0;
-		}
-	}
-	fourier.Process( fourier.complex );
+
+
+	pMagnitude->m_pFourier->Process( grayImage, baseIndex );
+
 	for (int i = 0; i < vectorLength; i++)
 	{
-		radial.resultFunc[i] = 0;
+		pMagnitude->m_pRadialFrequency->resultFunc[i] = 0;
 	}
+
+	UINT sizeMinus10 = size - 10;
 	for (int i = 0; i < size; i++)
 	{
 		for (int j = 0; j < size; j++)
 		{
-			if ( radial.distance[j][i] < vectorLength )
-			radial.resultFunc[ radial.distance[j][i] ] += sqrt(  fourier.complex[j][i].Real * fourier.complex[j][i].Real + fourier.complex[j][i].Imaginary * fourier.complex[j][i].Imaginary );
+			if ( pMagnitude->m_pRadialFrequency->distance[j][i] < vectorLength )
+				pMagnitude->m_pRadialFrequency->resultFunc[ pMagnitude->m_pRadialFrequency->distance[j][i] ] +=
+				sqrt( pMagnitude->m_pFourier->data[j][i].Real * pMagnitude->m_pFourier->data[j][i].Real + pMagnitude->m_pFourier->data[j][i].Imaginary * pMagnitude->m_pFourier->data[j][i].Imaginary );
 		}
 	}
 	for (int i = 0; i < vectorLength; i++)
 	{
-		radial.resultFunc[i] = log( radial.resultFunc[i] ) / fourier.log2;
+		pMagnitude->m_pRadialFrequency->resultFunc[i] = log( pMagnitude->m_pRadialFrequency->resultFunc[i] ) / pMagnitude->m_pFourier->log2;
 	}
 
-
 	
-	double alfa = -1 * regression.GetAlpha( radial.resultFunc, vectorLength  );
+	double alfa = -1 * pMagnitude->m_pLinearRegresion->GetAlpha( pMagnitude->m_pRadialFrequency->resultFunc, vectorLength );
 
-
-	if ( skin )
+	if ( pMagnitude->m_Skin )
 	{
 		if ( alfa < 1.25 ) return 255;
 		else if ( alfa < 1.75 ) return 255.0 * 2.0 * ( 1.75 - alfa );

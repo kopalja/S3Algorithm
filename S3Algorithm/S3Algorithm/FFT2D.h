@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "ImageHandler.h"
 
 struct Complex
 {
@@ -10,9 +11,9 @@ class FFT2D
 public:
 	FFT2D( int size );
 	~FFT2D( void );
-	void Process( Complex **data );
+	void Process( Image* image, int baseINdex );
 	double log2;
-	Complex **complex;
+	Complex **data;
 
 private:
 	inline void FFT( double *x, double *y );

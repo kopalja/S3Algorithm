@@ -15,6 +15,7 @@ RadialFrequency::RadialFrequency( __in int blockSize, __in int resolution )
 	double **realDistance = CountRealDistances( __in blockSize );
 	double *differentDistances = SortDifferentDistances( realDistance, blockSize );
 	SetIntDistances( realDistance, differentDistances, blockSize );
+	ShiftDistances();
 	//CountOccurrences( blockSize );
 		
 	resultFunc = new double[resolution];
@@ -30,6 +31,8 @@ RadialFrequency::RadialFrequency( __in int blockSize, __in int resolution )
 
 	delete[] realDistance;
 	delete[] differentDistances;
+
+	cout << "aaaaa" << endl;
 }
 
 
@@ -141,6 +144,27 @@ void RadialFrequency::CountOccurrences(int size)
 		for (int x = 0; x < size; x++)
 		{
 			numeberOfOccurrences[distance[x][y]]++;
+		}
+	}
+}
+
+
+
+void RadialFrequency::ShiftDistances()
+{
+	BYTE tmp;
+	int halfSize = 16;
+	for (int y = 0; y < halfSize; y++)
+	{
+		for (int x = 0; x < halfSize; x++)
+		{
+			tmp = distance[x][y];
+			distance[x][y] = distance[x + halfSize][y + halfSize];
+			distance[x + halfSize][y + halfSize] = tmp;
+
+			tmp = distance[x + halfSize][y];
+			distance[x + halfSize][y] = distance[x][y + halfSize];
+			distance[x][y + halfSize] = tmp;
 		}
 	}
 }
