@@ -8,29 +8,21 @@ using namespace std;
 //--------------------First Row--------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------
 
-double** LargeBlock::CountFirst( Image *gray, MagnitudeSpectrum *pMagnitude )
+void LargeBlock::CountFirst( Image *gray, MagnitudeSpectrum *pMagnitude, double** ppPixelValue )
 {
 	baseIndex = 0;
-	double **pixelValue;
-	pixelValue = new double*[32];
-	for (int i = 0; i < 32; i++)
-	{
-		pixelValue[i] = new double[32];
-	}
 	
 	for (int y = 0; y < 32; y++)
 	{
 		for (int x = 0; x < 32; x++)
 		{
-			pixelValue[x][y] = PixelLuminance( gray->buffer[y * gray->width + x] );
+			ppPixelValue[x][y] = PixelLuminance( gray->buffer[y * gray->width + x] );
 		}
 	}
-	CountMMMDataFromPixelValue( pixelValue );
+	CountMMMDataFromPixelValue( ppPixelValue );
 
 	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
-	else finalValue = Magic( gray, pMagnitude );
-
-	return pixelValue;
+	else finalValue = pMagnitude->GetSlope( baseIndex, gray );
 }
 
 
@@ -52,7 +44,7 @@ void LargeBlock::CountFirstInColumn( double **pixelValue, Image *gray, Magnitude
 	CountMMMDataFromPixelValue( pixelValue );
 
 	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
-	else finalValue = Magic( gray, pMagnitude );
+	else finalValue = pMagnitude->GetSlope( baseIndex, gray );
 }
 
 
@@ -121,19 +113,14 @@ void LargeBlock::CountQuarterFromPixelValue( int quarterToCount, double **pixelV
 
 
 
-void LargeBlock::CountFirstInRow( LargeBlock *above, Image *gray, MagnitudeSpectrum *pMagnitude )
+void LargeBlock::CountFirstInRow( double **pixelValue, LargeBlock *above, Image *gray, MagnitudeSpectrum *pMagnitude )
 {
-	double **subBlock0 = new double*[32];
-	for (int i = 0; i < 32; i++)
-	{
-		subBlock0[i] = new double[8];
-	}
 
 	for (int y = 0; y < 8; y++)
 	{
 		for (int x = 0; x < 32; x++)
 		{
-			subBlock0[x][y] = PixelLuminance( gray->buffer[baseIndex + x + ( ( 24 + y ) * gray->width )] );
+			pixelValue[x][y] = PixelLuminance( gray->buffer[baseIndex + x + ( ( 24 + y ) * gray->width )] );
 		}
 	}
 	for (int i = 0; i < 4; i++)
@@ -142,9 +129,9 @@ void LargeBlock::CountFirstInRow( LargeBlock *above, Image *gray, MagnitudeSpect
 		{
 			for (int x = ( 3 - i ) * 8; x < ( 4 - i ) * 8; x++)
 			{
-				if ( subBlock0[x][y] > mmmDataRight.max[i] )  mmmDataRight.max[i] = subBlock0[x][y];
-				if ( subBlock0[x][y] < mmmDataRight.min[i] ) mmmDataRight.min[i] = subBlock0[x][y];
-				mmmDataRight.sum[i] += subBlock0[x][y];
+				if ( pixelValue[x][y] > mmmDataRight.max[i] )  mmmDataRight.max[i] = pixelValue[x][y];
+				if ( pixelValue[x][y] < mmmDataRight.min[i] ) mmmDataRight.min[i] = pixelValue[x][y];
+				mmmDataRight.sum[i] += pixelValue[x][y];
 			}
 		}
 	}
@@ -164,13 +151,7 @@ void LargeBlock::CountFirstInRow( LargeBlock *above, Image *gray, MagnitudeSpect
 	CountMMMDataFromAbove( above );
 
 	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
-	else finalValue = Magic( gray, pMagnitude );
-
-	for (int i = 0; i < 32; i++)
-	{
-		delete[] subBlock0[i];
-	}
-	delete[] subBlock0;
+	else finalValue = pMagnitude->GetSlope( baseIndex, gray );
 }
 
 
@@ -214,7 +195,7 @@ void LargeBlock::Count( double** pixelValue, LargeBlock *above, LargeBlock *left
 	CountMMMDataFromAbove( above );
 
 	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
-	else finalValue = Magic( gray, pMagnitude );
+	else finalValue = pMagnitude->GetSlope( baseIndex, gray );
 }
 
 
@@ -237,51 +218,4 @@ void LargeBlock::CountMMMDataFromAbove( LargeBlock *above )
 	mmmDataDown.max[3] = max( mmmDataDown.max[0], above->mmmDataDown.max[2] );
 	mmmDataDown.min[3] = min( mmmDataDown.min[0], above->mmmDataDown.min[2] );
 	mmmDataDown.sum[3] = mmmDataDown.sum[0] + above->mmmDataDown.sum[2];
-}
-
-
-
-inline int LargeBlock::Magic( Image *grayImage, MagnitudeSpectrum *pMagnitude )
-{
-	int size = 32;
-	int vectorLength = 4;
-
-
-	pMagnitude->m_pFourier->Process( grayImage, baseIndex );
-
-	for (int i = 0; i < vectorLength; i++)
-	{
-		pMagnitude->m_pRadialFrequency->resultFunc[i] = 0;
-	}
-
-	UINT sizeMinus10 = size - 10;
-	for (int i = 0; i < size; i++)
-	{
-		for (int j = 0; j < size; j++)
-		{
-			if ( pMagnitude->m_pRadialFrequency->distance[j][i] < vectorLength )
-				pMagnitude->m_pRadialFrequency->resultFunc[ pMagnitude->m_pRadialFrequency->distance[j][i] ] +=
-				sqrt( pMagnitude->m_pFourier->data[j][i].Real * pMagnitude->m_pFourier->data[j][i].Real + pMagnitude->m_pFourier->data[j][i].Imaginary * pMagnitude->m_pFourier->data[j][i].Imaginary );
-		}
-	}
-	for (int i = 0; i < vectorLength; i++)
-	{
-		pMagnitude->m_pRadialFrequency->resultFunc[i] = log( pMagnitude->m_pRadialFrequency->resultFunc[i] ) / pMagnitude->m_pFourier->log2;
-	}
-
-	
-	double alfa = -1 * pMagnitude->m_pLinearRegresion->GetAlpha( pMagnitude->m_pRadialFrequency->resultFunc, vectorLength );
-
-	if ( pMagnitude->m_Skin )
-	{
-		if ( alfa < 1.25 ) return 255;
-		else if ( alfa < 1.75 ) return 255.0 * 2.0 * ( 1.75 - alfa );
-		else return 0; 
-	}
-	else
-	{
-		if ( alfa < 0.2 ) return 255;
-		else if ( alfa < 1.2 ) return 255.0 * ( 1.2 - alfa );
-		else return 0;
-	}
 }

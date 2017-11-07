@@ -1,8 +1,5 @@
-
+#include "stdafx.h"
 #include "ImageHandler.h"
-#include "Block.h"
-#include "LargeBlock.h"
-#include "FFT2D.h"
 #include "S1.h"
 #include "S2.h"
 

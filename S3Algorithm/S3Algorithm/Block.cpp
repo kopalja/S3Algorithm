@@ -7,16 +7,15 @@ using namespace std;
 
 
 
-int Block::shift = sizeof(int) * CHAR_BIT - 1;
 
-void Block::CountQuater(int quaterToCount, Image* image)
+void Block::CountQuater( __in int quaterToCount, __in Image* pImage )
 {
-	int *quater;
+	UINT *quater;
 	int baseX = x;
 	int baseY = y;
-	UINT offSet = baseY * image->width;
-	center = CountSubBlock( offSet + image->width + image->width + image->width + baseX + 3, image );
-	if (quaterToCount == 1) 
+	UINT offSet = baseY * pImage->width;
+	center = CountSubBlock( offSet + pImage->width + pImage->width + pImage->width + baseX + 3, pImage );
+	if ( quaterToCount == 1 ) 
 	{
 		quater = quarter1;
 	}
@@ -36,76 +35,77 @@ void Block::CountQuater(int quaterToCount, Image* image)
 		baseX += 4;
 		baseY += 4;
 	}
-	quater[0] = CountSubBlock( offSet + baseX + 0, image );
-	quater[1] = CountSubBlock( offSet + baseX + 1, image );
-	quater[2] = CountSubBlock( offSet + baseX + 2, image );
-	quater[3] = CountSubBlock( offSet + image->width + baseX + 0, image );
-	quater[4] = CountSubBlock( offSet + image->width + baseX + 1, image );
-	quater[5] = CountSubBlock( offSet + image->width + baseX + 2, image );
-	quater[6] = CountSubBlock( offSet + image->width + image->width + baseX + 0, image );
-	quater[7] = CountSubBlock( offSet + image->width + image->width + baseX + 1, image );
-	quater[8] = CountSubBlock( offSet + image->width + image->width + baseX + 2, image );
+	quater[0] = CountSubBlock( offSet + baseX + 0, pImage );
+	quater[1] = CountSubBlock( offSet + baseX + 1, pImage );
+	quater[2] = CountSubBlock( offSet + baseX + 2, pImage );
+	quater[3] = CountSubBlock( offSet + pImage->width + baseX + 0, pImage );
+	quater[4] = CountSubBlock( offSet + pImage->width + baseX + 1, pImage );
+	quater[5] = CountSubBlock( offSet + pImage->width + baseX + 2, pImage );
+	quater[6] = CountSubBlock( offSet + pImage->width + pImage->width + baseX + 0, pImage );
+	quater[7] = CountSubBlock( offSet + pImage->width + pImage->width + baseX + 1, pImage );
+	quater[8] = CountSubBlock( offSet + pImage->width + pImage->width + baseX + 2, pImage );
 }
 
-void Block::CountLine(int lineToCount, Image* image)
+void Block::CountLine( __in int lineToCount, __in Image* pImage )
 {
 	if ( lineToCount == 1 )
 	{
-		line1[0] = CountSubBlock( ( y + 0) * image->width + x + 3, image );
-		line1[1] = CountSubBlock( ( y + 1) * image->width + x + 3, image );
-		line1[2] = CountSubBlock( ( y + 2) * image->width + x + 3, image );
+		line1[0] = CountSubBlock( ( y + 0) * pImage->width + x + 3, pImage );
+		line1[1] = CountSubBlock( ( y + 1) * pImage->width + x + 3, pImage );
+		line1[2] = CountSubBlock( ( y + 2) * pImage->width + x + 3, pImage );
 	}
 	else if ( lineToCount == 2 )
 	{
-		line2[0] = CountSubBlock( ( y + 3) * image->width + x + 0, image );
-		line2[1] = CountSubBlock( ( y + 3) * image->width + x + 1, image );
-		line2[2] = CountSubBlock( ( y + 3) * image->width + x + 2, image );
+		line2[0] = CountSubBlock( ( y + 3) * pImage->width + x + 0, pImage );
+		line2[1] = CountSubBlock( ( y + 3) * pImage->width + x + 1, pImage );
+		line2[2] = CountSubBlock( ( y + 3) * pImage->width + x + 2, pImage );
 	}
 	else if ( lineToCount == 3 )
 	{
-		line3[0] = CountSubBlock( ( y + 3) * image->width + x + 4, image );
-		line3[1] = CountSubBlock( ( y + 3) * image->width + x + 5, image );
-		line3[2] = CountSubBlock( ( y + 3) * image->width + x + 6, image );
+		line3[0] = CountSubBlock( ( y + 3) * pImage->width + x + 4, pImage );
+		line3[1] = CountSubBlock( ( y + 3) * pImage->width + x + 5, pImage );
+		line3[2] = CountSubBlock( ( y + 3) * pImage->width + x + 6, pImage );
 	}
 	else if ( lineToCount == 4 )
 	{
-		line4[0] = CountSubBlock( ( y + 4) * image->width + x + 3, image );
-		line4[1] = CountSubBlock( ( y + 5) * image->width + x + 3, image );
-		line4[2] = CountSubBlock( ( y + 6) * image->width + x + 3, image );
+		line4[0] = CountSubBlock( ( y + 4) * pImage->width + x + 3, pImage );
+		line4[1] = CountSubBlock( ( y + 5) * pImage->width + x + 3, pImage );
+		line4[2] = CountSubBlock( ( y + 6) * pImage->width + x + 3, pImage );
 	}
 }
 
 
 
-inline int Block::CountSubBlock(int index, Image* image)
+inline int Block::CountSubBlock( __in int index, __in Image* pImage)
 {
-	int indexPlusWidth = index + image->width;
+	int indexPlusWidth = index + pImage->width;
+	int shift = sizeof(int) * CHAR_BIT - 1;
 
-	int in1 = image->buffer[index] - image->buffer[index + 1];
+	int in1 = pImage->buffer[index] - pImage->buffer[index + 1];
 	int const mask1 = in1 >> shift;
 
-	int in2 = image->buffer[index] - image->buffer[indexPlusWidth];
+	int in2 = pImage->buffer[index] - pImage->buffer[indexPlusWidth];
 	int const mask2 = in2 >> shift;
 
-	int in3 = image->buffer[index] - image->buffer[indexPlusWidth + 1];
+	int in3 = pImage->buffer[index] - pImage->buffer[indexPlusWidth + 1];
 	int const mask3 = in3 >> shift;
 
-	int in4 = image->buffer[index + 1] - image->buffer[indexPlusWidth];
+	int in4 = pImage->buffer[index + 1] - pImage->buffer[indexPlusWidth];
 	int const mask4 = in4 >> shift;
 
-	int in5 = image->buffer[index + 1] - image->buffer[indexPlusWidth + 1];
+	int in5 = pImage->buffer[index + 1] - pImage->buffer[indexPlusWidth + 1];
 	int const mask5 = in5 >> shift;
 
-	int in6 = image->buffer[indexPlusWidth] - image->buffer[indexPlusWidth + 1];
+	int in6 = pImage->buffer[indexPlusWidth] - pImage->buffer[indexPlusWidth + 1];
 	int const mask6 = in6 >> shift;
 
 	return ((in1 + mask1) ^ mask1) + ((in2 + mask2) ^ mask2) + ((in3 + mask3) ^ mask3) + ((in4 + mask4) ^ mask4) + ((in5 + mask5) ^ mask5) + ((in6 + mask6) ^ mask6);
 }
 
 
-int Block::GetMax()
+BYTE Block::GetMax()
 {
-	int ans = 0;
+	UINT ans = 0;
 	for (int i = 0; i < 9; i++)
 	{
 		if ( quarter1[i] > ans ) ans = quarter1[i];
@@ -122,10 +122,10 @@ int Block::GetMax()
 	}
 	if (center > ans ) ans = center;
 
-	ans *=3;
+	ans = ans << 1;
 
-	  //if (ans > 100) cout << ans << endl;
+	if ( ans > 255 ) 
+		return 255;
 
-	if ( ans > 255 ) {  return 255; }
 	return ans;
 }

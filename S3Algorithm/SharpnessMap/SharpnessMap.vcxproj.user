@@ -5,7 +5,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>C:\Users\User\Documents\GitHub\Praca\real3.tif C:\Users\User\Documents\GitHub\Praca\out.tif</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>C:\Users\User\Documents\GitHub\Praca\276.jpg C:\Users\User\Documents\GitHub\Praca\out.jpg</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

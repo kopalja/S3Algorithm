@@ -10,119 +10,124 @@
 
 RadialFrequency::RadialFrequency( __in int blockSize, __in int resolution )
 {
-	this->resolution = resolution;
+	m_BlockSize = blockSize;
 
-	double **realDistance = CountRealDistances( __in blockSize );
-	double *differentDistances = SortDifferentDistances( realDistance, blockSize );
-	SetIntDistances( realDistance, differentDistances, blockSize );
-	ShiftDistances();
-	//CountOccurrences( blockSize );
-		
-	resultFunc = new double[resolution];
-	for (int i = 0; i < resolution; i++) 
-	{
-		resultFunc[i] = 0;
-	}
-
+	/* Aloc meber variables, dealoc in decstuctor */
+	m_pResultFunction = new double[resolution];
+	m_ppDistance = new BYTE*[blockSize];
 	for (int i = 0; i < blockSize; i++)
-	{
-		delete[] realDistance[i];
-	}
+		m_ppDistance[i] = new BYTE[blockSize];
 
-	delete[] realDistance;
-	delete[] differentDistances;
 
-	cout << "aaaaa" << endl;
+
+	/* Count Real Distances from cester */
+	double **ppRealDistance = new double*[blockSize];
+	for (int i = 0; i < blockSize; i++)
+		ppRealDistance[i] = new double[blockSize];
+	CountRealDistances( ppRealDistance );
+
+
+	/* Find all different dic=stances */
+	double *pDifferentValues = new double[blockSize * blockSize];
+	int numberOfDifferentDistances = FindDifferentDistances( ppRealDistance, pDifferentValues );
+
+	/* Sort different distances */
+	double *pSortedValues = new double[numberOfDifferentDistances];
+	SortDifferentDistances( numberOfDifferentDistances, pDifferentValues, pSortedValues );
+
+
+	/* Set member variables */
+	SetIntDistances( numberOfDifferentDistances, resolution, ppRealDistance, pSortedValues );
+	ShiftDistances();
+		
+	/* Dealoc */
+	for (int i = 0; i < blockSize; i++) 
+		delete[] ppRealDistance[i];
+	delete[] ppRealDistance;
+	delete[] pDifferentValues;
+	delete[] pSortedValues;
 }
 
 
 RadialFrequency::~RadialFrequency( void )
 {
-	delete[] resultFunc;
+	for (int i = 0; i < m_BlockSize; i++)
+		delete[] m_ppDistance[i];
+	delete[] m_ppDistance;
+	delete[] m_pResultFunction;
 }
 
 
-double** RadialFrequency::CountRealDistances( int size )
+void RadialFrequency::CountRealDistances(  __out double **ppRealDistance  )
 {
-	double **realDistance = new double*[size];
-
-	for (int i = 0; i < size; i++)
+	double halfSize = (double)m_BlockSize / (double)2;
+	for (int y = 0; y < m_BlockSize; y++)
 	{
-		realDistance[i] = new double[size];
-	}
-
-	double halfSize = (double)size / (double)2;
-	for (int y = 0; y < size; y++)
-	{
-		for (int x = 0; x < size; x++)
+		for (int x = 0; x < m_BlockSize; x++)
 		{
-			realDistance[x][y] = sqrt( ( ( x - halfSize ) / halfSize ) * ( ( x - halfSize ) / halfSize ) + ( ( y - halfSize ) / halfSize ) * ( ( y - halfSize ) / halfSize ) );
+			ppRealDistance[x][y] = sqrt( ( ( x - halfSize ) / halfSize ) * ( ( x - halfSize ) / halfSize ) + ( ( y - halfSize ) / halfSize ) * ( ( y - halfSize ) / halfSize ) );
 		}
 	}
-	return realDistance;
 }
 
-
-double* RadialFrequency::SortDifferentDistances( double **realDistance, int size )
+int RadialFrequency::FindDifferentDistances( __in double **ppRealDistance, __out_ecount( m_BlockSize * m_BlockSize ) double *pDifferentDistance  )
 {
-	double *differentValues = new double[size * size];
 	int difPointer = 0;
-	for (int y = 0; y < size; y++)
+	for (int y = 0; y < m_BlockSize; y++)
 	{
-		for (int x = 0; x < size; x++)
+		for (int x = 0; x < m_BlockSize; x++)
 		{
 			for (int i = 0; i < difPointer + 1; i++)
 			{
 				if ( i == difPointer ) // if new distance isnot already in array;
 				{
-					differentValues[difPointer] = realDistance[x][y];
+					pDifferentDistance[difPointer] = ppRealDistance[x][y];
 					difPointer++;
 					break;
 				}
-				if ( differentValues[i] == realDistance[x][y] ) break;
+				if ( pDifferentDistance[i] == ppRealDistance[x][y] ) break;
 			}
 		}
 	}
+	return difPointer;
+}
+
+void RadialFrequency::SortDifferentDistances( __in UINT numberOfDifferentDistances, __in_ecount( m_BlockSize * m_BlockSize ) double *pDifferentDistances, __out_ecount( numberOfDifferentDistances )  double *pSortedDifferentDistances  )
+{
 	/* Sort different Values */
-	for (int i = 0; i < difPointer; i++)
+	for (int i = 0; i < numberOfDifferentDistances; i++)
 	{
-		for (int j = 1; j < difPointer; j++)
+		for (int j = 1; j < numberOfDifferentDistances; j++)
 		{
-			if ( differentValues[j] < differentValues[j - 1] ) 
+			if ( pDifferentDistances[j] < pDifferentDistances[j - 1] ) 
 			{
-				double temp = differentValues[j];
-				differentValues[j] = differentValues[j - 1];
-				differentValues[j - 1] = temp;
+				double temp = pDifferentDistances[j];
+				pDifferentDistances[j] = pDifferentDistances[j - 1];
+				pDifferentDistances[j - 1] = temp;
 			}
 		}
 	}
-	double *result = new double[difPointer];
-	for (int i = 0; i < difPointer; i++)
+	for (int i = 0; i < numberOfDifferentDistances; i++)
 	{
-		result[i] = differentValues[i];
+		pSortedDifferentDistances[i] = pDifferentDistances[i];
 	}
-	numOfDifferentValues = difPointer;
-	delete[] differentValues;
-	return result;
 }
 
 
-void RadialFrequency::SetIntDistances( __in double **realDistance, __in double *differentDistances, __in int size )
+void RadialFrequency::SetIntDistances( __in UINT numberOfDifferentDistances, __in UINT resolution, __in double **ppRealDistance, __in_ecount( numberOfDifferentDistances ) double *pSortedDifferentDistances  )
 {
-	distance = new int*[size];
-	for (int i = 0; i < size; i++) distance[i] = new int[size];
 
-	double highestValue = differentDistances[numOfDifferentValues - 1];
+	double highestValue = pSortedDifferentDistances [numberOfDifferentDistances - 1];
 
-	for (int y = 0; y < size; y++)
+	for (int y = 0; y < m_BlockSize; y++)
 	{
-		for (int x = 0; x < size; x++)
+		for (int x = 0; x < m_BlockSize; x++)
 		{
-			for (int i = 0; i < numOfDifferentValues; i++)
+			for (int i = 0; i < numberOfDifferentDistances; i++)
 			{
-				if ( differentDistances[i] == realDistance[x][y] )
+				if ( pSortedDifferentDistances[i] == ppRealDistance[x][y] )
 				{
-					distance[x][y] = realDistance[x][y] / highestValue * resolution;
+					m_ppDistance[x][y] = ppRealDistance[x][y] / highestValue * resolution;
 					break;
 				}
 			}
@@ -130,41 +135,24 @@ void RadialFrequency::SetIntDistances( __in double **realDistance, __in double *
 	}
 }
 
-
-void RadialFrequency::CountOccurrences(int size)
-{
-	numeberOfOccurrences = new int[resolution];
-	for (int i = 0; i < resolution; i++)
-	{
-		numeberOfOccurrences[i] = 0;
-	}
-
-	for (int y = 0; y < size; y++)
-	{
-		for (int x = 0; x < size; x++)
-		{
-			numeberOfOccurrences[distance[x][y]]++;
-		}
-	}
-}
 
 
 
 void RadialFrequency::ShiftDistances()
 {
 	BYTE tmp;
-	int halfSize = 16;
+	int halfSize = m_BlockSize / 2;
 	for (int y = 0; y < halfSize; y++)
 	{
 		for (int x = 0; x < halfSize; x++)
 		{
-			tmp = distance[x][y];
-			distance[x][y] = distance[x + halfSize][y + halfSize];
-			distance[x + halfSize][y + halfSize] = tmp;
+			tmp = m_ppDistance[x][y];
+			m_ppDistance[x][y] = m_ppDistance[x + halfSize][y + halfSize];
+			m_ppDistance[x + halfSize][y + halfSize] = tmp;
 
-			tmp = distance[x + halfSize][y];
-			distance[x + halfSize][y] = distance[x][y + halfSize];
-			distance[x][y + halfSize] = tmp;
+			tmp = m_ppDistance[x + halfSize][y];
+			m_ppDistance[x + halfSize][y] = m_ppDistance[x][y + halfSize];
+			m_ppDistance[x][y + halfSize] = tmp;
 		}
 	}
 }

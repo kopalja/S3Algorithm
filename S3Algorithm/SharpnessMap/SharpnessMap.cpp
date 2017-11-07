@@ -7,6 +7,11 @@
 
 #include <iostream>
 
+
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
+
 using namespace std;
 
 int main(int argc, char* argv[])
@@ -35,6 +40,7 @@ int main(int argc, char* argv[])
 
 	}
 	s.Process( argv[1], argv[2], resultType, fourierReduction, skin );
+	_CrtDumpMemoryLeaks();
 	return 0;
 }
 

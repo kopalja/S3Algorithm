@@ -9,25 +9,29 @@ using namespace std;
 # define M_PI           3.14159265358979323846  /* pi */
 
 
-FFT2D::FFT2D( int size )
+FFT2D::FFT2D( UINT size )
 {
-	real = new double[size];
-	imag = new double[size];
-	data = new Complex*[size];
+	m_pReal = new double[size];
+	m_pImag = new double[size];
+	m_ppData = new Complex*[size];
 	for (int i = 0; i < size; i++)
 	{
-		data[i] = new Complex[size];
+		m_ppData[i] = new Complex[size];
 	}
 
 	this->size = size;
-	log2 = log( 2.0 );
-	logSize = log( size ) / log2;
+	logSize = log( size ) / log( 2.0 );
 }
 
 FFT2D::~FFT2D( void )
 {
-	delete[] real;
-	delete[] imag;
+	delete[] m_pReal;
+	delete[] m_pImag;
+	for (int i = 0; i < size; i++)
+	{
+		delete[] m_ppData[i];
+	}
+	delete[] m_ppData;
 }
 
 void FFT2D::Process( Image* image, int baseIndex  )
@@ -40,14 +44,14 @@ void FFT2D::Process( Image* image, int baseIndex  )
 	{
 		for ( j = 0; j < size; j++ ) 
 		{ 
-			real[j] = image->buffer[ baseIndex + i * image->width + j ];
-			imag[j] = 0;
+			m_pReal[j] = image->buffer[ baseIndex + i * image->width + j ];
+			m_pImag[j] = 0;
 		}
-		FFT( real, imag );
+		FFT();
 		for ( j = 0; j < size; j++ ) 
 		{
-			data[j][i].Real = real[j];
-			data[j][i].Imaginary = imag[j];
+			m_ppData[j][i].Real = m_pReal[j];
+			m_ppData[j][i].Imaginary = m_pImag[j];
 		}
 	}
 
@@ -56,21 +60,20 @@ void FFT2D::Process( Image* image, int baseIndex  )
 	{
 		for ( j = 0; j < size; j++ ) 
 		{
-			real[j] = data[i][j].Real;
-			imag[j] = data[i][j].Imaginary;
+			m_pReal[j] = m_ppData[i][j].Real;
+			m_pImag[j] = m_ppData[i][j].Imaginary;
 		}
-		FFT( real, imag );
+		FFT();
 		for ( j = 0; j < size; j++ ) 
 		{
-			data[i][j].Real = real[j];
-			data[i][j].Imaginary = imag[j];
+			m_ppData[i][j].Real = m_pReal[j];
+			m_ppData[i][j].Imaginary = m_pImag[j];
 		}
 	}
-	//ShiftData( _Inout_ data );
 }
 
 
-inline void FFT2D::FFT( double *x, double *y )
+inline void FFT2D::FFT( void )
 {  
 	UINT i,i1,j,k,i2,l,l1,l2;
 	double c1,c2,tx,ty,t1,t2,u1,u2,z;
@@ -84,12 +87,12 @@ inline void FFT2D::FFT( double *x, double *y )
 	{
 		if (i < j) 
 		{
-			tx = x[i];
-			ty = y[i];
-			x[i] = x[j];
-			y[i] = y[j];
-			x[j] = tx;
-			y[j] = ty;
+			tx = m_pReal[i];
+			ty = m_pImag[i];
+			m_pReal[i] = m_pReal[j];
+			m_pImag[i] = m_pImag[j];
+			m_pReal[j] = tx;
+			m_pImag[j] = ty;
 		}
 		k = i2;
 		while ( k <= j ) 
@@ -115,12 +118,12 @@ inline void FFT2D::FFT( double *x, double *y )
 			for ( i = j; i < size; i += l2 )
 			{
 				i1 = i + l1;
-				t1 = u1 * x[i1] - u2 * y[i1];
-				t2 = u1 * y[i1] + u2 * x[i1];
-				x[i1] = x[i] - t1;
-				y[i1] = y[i] - t2;
-				x[i] += t1;
-				y[i] += t2;
+				t1 = u1 * m_pReal[i1] - u2 * m_pImag[i1];
+				t2 = u1 * m_pImag[i1] + u2 * m_pReal[i1];
+				m_pReal[i1] = m_pReal[i] - t1;
+				m_pImag[i1] = m_pImag[i] - t2;
+				m_pReal[i] += t1;
+				m_pImag[i] += t2;
 			}
 			z =  u1 * c1 - u2 * c2;
 			u2 = u1 * c2 + u2 * c1;
@@ -134,26 +137,7 @@ inline void FFT2D::FFT( double *x, double *y )
 	/* Scaling for forward transform */
     for ( i = 0; i < size; i++ ) 
 	{
-		x[i] /= (float)size;
-        y[i] /= (float)size;
-	}
-}
-
-void FFT2D::ShiftData( _Inout_ Complex **complex )
-{
-	Complex tmp;
-	int halfSize = size >> 1;
-	for (int y = 0; y < halfSize; y++)
-	{
-		for (int x = 0; x < halfSize; x++)
-		{
-			tmp = complex[x][y];
-			complex[x][y] = complex[x + halfSize][y + halfSize];
-			complex[x + halfSize][y + halfSize] = tmp;
-
-			tmp = complex[x + halfSize][y];
-			complex[x + halfSize][y] = complex[x][y + halfSize];
-			complex[x][y + halfSize] = tmp;
-		}
+		m_pReal[i] /= (float)size;
+        m_pImag[i] /= (float)size;
 	}
 }

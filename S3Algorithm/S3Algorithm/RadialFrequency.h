@@ -1,8 +1,5 @@
 #pragma once
-#include "FFT2D.h"
-#include <iostream>
-using namespace std;
-
+#include <Windows.h>
 
 
 class RadialFrequency
@@ -10,19 +7,36 @@ class RadialFrequency
 public:
 	RadialFrequency( __in int blockSize, __in int resolution );
 	~RadialFrequency( void );
-	double *resultFunc;
-	int **distance;
-	int *numeberOfOccurrences;
-	int resolution;
 
+	double *m_pResultFunction;
+	BYTE **m_ppDistance;
 
 private:
-	double** CountRealDistances( __in int size );
-	double* SortDifferentDistances( double **realDistance, int size );
-	void SetIntDistances( __in double **realDistance, __in double *differentDistances, __in int size );
-	void ShiftDistances();
-	void CountOccurrences( int size );
+	UINT m_BlockSize;
 
-	int numOfDifferentValues;
+	void CountRealDistances( 
+		__out double **ppRealDistance 
+		);
+
+	int FindDifferentDistances( 
+		__in double **ppRealDistance, 
+		__out_ecount( m_BlockSize * m_BlockSize ) double *pDifferentDistance
+		);
+
+	void SortDifferentDistances( 
+		__in UINT numberOfDifferentDistances,
+		__in_ecount( m_BlockSize * m_BlockSize ) double *pDifferentDistances, 
+		__out_ecount( numberOfDifferentDistances )  double *pSortedDifferentDistances 
+		);
+
+	void SetIntDistances( 
+		__in UINT numberOfDifferentDistances,
+		__in UINT resolution,
+		__in double **ppRealDistance, 
+		__in_ecount( numberOfDifferentDistances ) double *pSortedDifferentDistances 
+		);
+
+	void ShiftDistances(
+		);
 };
 

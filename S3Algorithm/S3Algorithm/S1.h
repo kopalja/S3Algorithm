@@ -1,8 +1,7 @@
 #pragma once
 
-#include "ImageHandler.h"
 #include "LargeBlock.h"
-#include "FFT2D.h"
+
 
 class S1
 {
@@ -16,15 +15,51 @@ public:
 		);
 
 private:
-	void CountFirstRow( LargeBlock* rowToCount, Image *gray, MagnitudeSpectrum *pMagnitude );
-	void CountRow( double **pixelValue, LargeBlock* rowToCount, LargeBlock *rowAbove, Image *gray, int y, MagnitudeSpectrum *pMagnitude );
-	inline void SetBuffer(LargeBlock* row1, LargeBlock* row2, LargeBlock* row3, LargeBlock* row4, Image *result, int y);
-	inline void SetRowBuffer(LargeBlock **blocks, int blocksLength, Image *result, int y);
-	inline void SetPixelBlock(int color, Image *result, int index);
+
+	void CountFirstRow( 
+		__out_ecount( numberOfBlocks ) LargeBlock* rowToCount,
+		__in Image *gray, 
+		__in MagnitudeSpectrum *pMagnitude 
+		);
+
+	void CountRow( 
+		_Out_writes_( 256 ) double **pp256PixelMaP, 
+		_Out_writes_( 64 ) double **pp64PixelMaP, 
+		__out_ecount( numberOfBlocks ) LargeBlock* rowToCount, 
+		__in_ecount( numberOfBlocks ) LargeBlock *rowAbove, 
+		__in Image *gray, 
+		__in int rowNumber,
+		__in MagnitudeSpectrum *pMagnitude 
+		);
+
+	inline void SetBuffer(
+		__in_ecount( numberOfBlocks ) LargeBlock* row1, 
+		__in_ecount( numberOfBlocks ) LargeBlock* row2, 
+		__in_ecount( numberOfBlocks ) LargeBlock* row3, 
+		__in_ecount( numberOfBlocks ) LargeBlock* row4,
+		__out Image *result, 
+		__in int rowNumber
+		);
+
+	inline void SetRowBuffer(
+		__in LargeBlock **blocks, 
+		__in int blocksLength, 
+		__out Image *result,
+		__in int rowNumber
+		);
+
+	inline void SetPixelBlock(
+		__in int color, 
+		__out Image *result, 
+		__in int index
+		);
 
 	int numberOfBlocks;
 
 
+
+
+	/*
 	inline void CR(LargeBlock *row, Image *gray, int yy)
 	{
 		double **pixelValue = new double*[32];
@@ -55,6 +90,6 @@ private:
 			if ( row[0].ContrastIsZerov( max, min, sum / 1024, 2 ) ) row[i].finalValue = 0;
 			else row[i].finalValue = 255;
 		}
-	}
+	} */
 };
 

@@ -1,10 +1,6 @@
 #pragma once
-#include "Image.h"
-#include <cmath>
-#include <iostream>
-#include "RadialFrequency.h"
-#include "LinearRegression.h"
 #include "MagnitudeSpectrum.h"
+#include <cmath>
 
 using namespace std;
 
@@ -51,23 +47,22 @@ public:
 	int baseIndex;
 
 	//final value
-	int finalValue;
+	BYTE finalValue;
 
 
-	double** CountFirst( Image *gray, MagnitudeSpectrum *pMagnitude ); // only first block
+	void CountFirst( Image *gray, MagnitudeSpectrum *pMagnitude, double** ppPixelValue ); // only first block
 	void CountFirstInColumn( double **pixelValue, Image *gray, MagnitudeSpectrum *pMagnitude ); 
-	void CountFirstInRow( LargeBlock *above, Image *gray, MagnitudeSpectrum *pMagnitude );
+	void CountFirstInRow(  double **pixelValue, LargeBlock *above, Image *gray, MagnitudeSpectrum *pMagnitude );
 	void Count( double** pixelValue, LargeBlock *above, LargeBlock *left, Image *gray, MagnitudeSpectrum *pMagnitude );
 
 
-	inline int Magic( Image *grayImage, MagnitudeSpectrum *pMagnitude );
 	
 	inline double  PixelLuminance( int pixelValue )
 	{
 		return ( 0.7656 + 0.0364 * pixelValue ) * ( 0.7656 + 0.0364 * pixelValue );   //fast, unaccurate
 		//return pow( 0.7656 + 0.0364 * pixelValue, 2.2 ); //slow, accurate
 	}
-	inline bool ContrastIsZerov( int max, int min, int mean, UINT fourierReduction )
+	inline bool ContrastIsZerov( UINT max, UINT min, int mean, UINT fourierReduction )
 	{
 		// Default fourierReducion == 2
 		if ( ( max - min <= fourierReduction ) ) return true;

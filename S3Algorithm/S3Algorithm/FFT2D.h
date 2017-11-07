@@ -9,17 +9,24 @@ struct Complex
 class FFT2D
 {
 public:
-	FFT2D( int size );
+	FFT2D( 
+		__in UINT size 
+		);
+
 	~FFT2D( void );
-	void Process( Image* image, int baseINdex );
-	double log2;
-	Complex **data;
+
+	void Process( 
+		__in Image* image, 
+		__in int baseINdex 
+		);
+
+	Complex **m_ppData;
 
 private:
-	inline void FFT( double *x, double *y );
-	void ShiftData( Complex **data );
-	double *real;
-	double *imag;
+	inline void FFT( void );
+
+	double *m_pReal;
+	double *m_pImag;
 	int size;
 	int logSize;
 };

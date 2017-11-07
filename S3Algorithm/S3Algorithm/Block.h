@@ -6,32 +6,40 @@ class Block
 public:
 	inline Block(void){};
 
-	int quarter1[9];
-	int quarter2[9];
-	int quarter3[9];
-	int quarter4[9];
+	UINT quarter1[9];
+	UINT quarter2[9];
+	UINT quarter3[9];
+	UINT quarter4[9];
 
-	int line1[3];
-	int line2[3];
-	int line3[3];
-	int line4[3];
+	UINT line1[3];
+	UINT line2[3];
+	UINT line3[3];
+	UINT line4[3];
 
 	int center;
 
 	// Coordinats of base pixel of block
 	int x,y;
 
-	int finalValue;
-
-	static int shift;
+	BYTE finalValue;
 
 	
-	void CountQuater(int quaterToCount, Image* image);
-	void CountLine(int lineToCount, Image* image);
+	void CountQuater( 
+		__in int quaterToCount, 
+		__in Image *pImage
+		);
 
-	int CountSubBlock(int index, Image* image);
+	void CountLine( 
+		__in int lineToCount,
+		__in Image* pImage
+		);
+
+	int CountSubBlock( 
+		__in int index, 
+		__in Image* pImage
+		);
 
 
-	int GetMax();
+	BYTE GetMax();
 };
 
