@@ -38,12 +38,12 @@ HRESULT ImageHandler::DefineFormat( char *inputPath )
 		if ( inputPath[i] == '.' ) break;
 		i++;
 	}
-	if ( inputPath[i + 1] == 'j' && inputPath[i + 2] == 'p' && inputPath[i + 3] == 'g' ) 
+	if ( ( inputPath[i + 1] == 'j' && inputPath[i + 2] == 'p' && inputPath[i + 3] == 'g' ) || ( inputPath[i + 1] == 'J' && inputPath[i + 2] == 'P' && inputPath[i + 3] == 'G' ) ) 
 	{
 		format = Format::Jpeg;
 		byteDepth = 3;
 	}
-	else if ( inputPath[i + 1] == 't' && inputPath[i + 2] == 'i' && inputPath[i + 3] == 'f' )
+	else if ( ( inputPath[i + 1] == 't' && inputPath[i + 2] == 'i' && inputPath[i + 3] == 'f' ) || ( inputPath[i + 1] == 'T' && inputPath[i + 2] == 'I' && inputPath[i + 3] == 'F' ) )
 	{
 		format = Format::Tiff;
 		byteDepth = 4;
@@ -158,10 +158,34 @@ HRESULT ImageHandler::SetFrames()
 					if ( height % 8 == 0 ) outHeight -= 2;
 					if (SUCCEEDED(hr))
 					{
+
 						hr = piFrameEncode->SetSize( outWidth, outHeight );
 						// Get and set the resolution.
 						if (SUCCEEDED(hr))
 						{
+							WICPixelFormatGUID k;
+							hr = piFrameDecode->GetPixelFormat( &k );
+							if ( k == GUID_WICPixelFormat24bpp3Channels || k == GUID_WICPixelFormat24bppBGR || k == GUID_WICPixelFormat24bppRGB )
+								byteDepth = 3;
+							else if ( k == GUID_WICPixelFormat32bpp3ChannelsAlpha || 
+								 k == GUID_WICPixelFormat32bpp4Channels || 
+								 k == GUID_WICPixelFormat32bppBGR ||
+								 k == GUID_WICPixelFormat32bppBGR101010 ||
+								 k == GUID_WICPixelFormat32bppBGRA ||
+								 k == GUID_WICPixelFormat32bppCMYK ||
+								 k == GUID_WICPixelFormat32bppGrayFixedPoint ||
+								 k == GUID_WICPixelFormat32bppGrayFloat ||
+								 k == GUID_WICPixelFormat32bppPBGRA ||
+								 k == GUID_WICPixelFormat32bppPRGBA ||
+								 k == GUID_WICPixelFormat32bppRGB ||
+								 k == GUID_WICPixelFormat32bppRGBA ||
+								 k == GUID_WICPixelFormat32bppRGBA1010102 ||
+								 k == GUID_WICPixelFormat32bppRGBA1010102XR ||
+								 k == GUID_WICPixelFormat32bppRGBE ) 
+								 byteDepth = 4;
+							else 
+								hr = E_INVALIDARG;
+
 							piFrameDecode->GetResolution(&dpiX, &dpiY);
 							if (SUCCEEDED(hr))
 							{

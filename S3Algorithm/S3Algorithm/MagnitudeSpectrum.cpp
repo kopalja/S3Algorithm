@@ -27,21 +27,21 @@ BYTE MagnitudeSpectrum::GetSlope( __in UINT baseIndex, __in Image *pGrayImage )
 {
 	m_pFourier->Process( pGrayImage, baseIndex );
 
-	for (int i = 0; i < vectorLength; i++)
+	for (UINT i = 0; i < vectorLength; i++)
 	{
 		m_pRadialFrequency->m_pResultFunction[i] = 0;
 	}
 
-	for (int i = 0; i < blockSize; i++)
+	for (UINT i = 0; i < blockSize; i++)
 	{
-		for (int j = 0; j < blockSize; j++)
+		for (UINT j = 0; j < blockSize; j++)
 		{
 			if ( m_pRadialFrequency->m_ppDistance[j][i] < vectorLength )
 				m_pRadialFrequency->m_pResultFunction[ m_pRadialFrequency->m_ppDistance[j][i] ] +=
 				sqrt( m_pFourier->m_ppData[j][i].Real * m_pFourier->m_ppData[j][i].Real + m_pFourier->m_ppData[j][i].Imaginary * m_pFourier->m_ppData[j][i].Imaginary );
 		}
 	}
-	for (int i = 0; i < vectorLength; i++)
+	for (UINT i = 0; i < vectorLength; i++)
 	{
 		m_pRadialFrequency->m_pResultFunction[i] = log( m_pRadialFrequency->m_pResultFunction[i] ) / m_Log2;
 	}

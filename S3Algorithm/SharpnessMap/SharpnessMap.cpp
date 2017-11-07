@@ -11,6 +11,8 @@
 #define _CRTDBG_MAP_ALLOC
 #include <cstdlib>
 #include <crtdbg.h>
+#include <thread>
+
 
 using namespace std;
 
@@ -39,6 +41,10 @@ int main(int argc, char* argv[])
 		}
 
 	}
+	unsigned concurentThreadsSupported = std::thread::hardware_concurrency();
+			
+	cout << concurentThreadsSupported << endl;
+
 	s.Process( argv[1], argv[2], resultType, fourierReduction, skin );
 	_CrtDumpMemoryLeaks();
 	return 0;

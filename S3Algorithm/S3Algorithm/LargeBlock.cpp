@@ -21,7 +21,7 @@ void LargeBlock::CountFirst( Image *gray, MagnitudeSpectrum *pMagnitude, double*
 	}
 	CountMMMDataFromPixelValue( ppPixelValue );
 
-	if ( ContrastIsZerov( mmmDataDown.max[3], mmmDataDown.min[3], mmmDataDown.sum[3] / 1024, pMagnitude->m_FourierReduction ) ) finalValue = 0;
+	if ( ContrastIsZerov( (int)mmmDataDown.max[3], (int)mmmDataDown.min[3], (int)( mmmDataDown.sum[3] / 1024.0 ), pMagnitude->m_FourierReduction ) ) finalValue = 0;
 	else finalValue = pMagnitude->GetSlope( baseIndex, gray );
 }
 

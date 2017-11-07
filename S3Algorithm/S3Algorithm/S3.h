@@ -18,7 +18,7 @@ public:
 	void Process( 
 		__in char* inputPath, 
 		__in char* outputPath, 
-		__in int resultType,
+		__in int resultType = 3,
 		__in int fourierReduction = 2, 
 		__in bool skin = true 
 		);
