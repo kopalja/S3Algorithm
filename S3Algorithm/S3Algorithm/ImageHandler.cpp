@@ -38,12 +38,14 @@ HRESULT ImageHandler::DefineFormat( char *inputPath )
 		if ( inputPath[i] == '.' ) break;
 		i++;
 	}
-	if ( ( inputPath[i + 1] == 'j' && inputPath[i + 2] == 'p' && inputPath[i + 3] == 'g' ) || ( inputPath[i + 1] == 'J' && inputPath[i + 2] == 'P' && inputPath[i + 3] == 'G' ) ) 
+	if ( ( inputPath[i + 1] == 'j' && inputPath[i + 2] == 'p' && inputPath[i + 3] == 'g' ) || 
+		( inputPath[i + 1] == 'J' && inputPath[i + 2] == 'P' && inputPath[i + 3] == 'G' ) ) 
 	{
 		format = Format::Jpeg;
 		byteDepth = 3;
 	}
-	else if ( ( inputPath[i + 1] == 't' && inputPath[i + 2] == 'i' && inputPath[i + 3] == 'f' ) || ( inputPath[i + 1] == 'T' && inputPath[i + 2] == 'I' && inputPath[i + 3] == 'F' ) )
+	else if ( ( inputPath[i + 1] == 't' && inputPath[i + 2] == 'i' && inputPath[i + 3] == 'f' ) || 
+		( inputPath[i + 1] == 'T' && inputPath[i + 2] == 'I' && inputPath[i + 3] == 'F' ) )
 	{
 		format = Format::Tiff;
 		byteDepth = 4;

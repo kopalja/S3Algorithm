@@ -16,11 +16,13 @@ using namespace std;
 
 S3::S3( void )
 {
+	/*
 	#ifdef NDEBUG
 		cout << "This is release" << endl;
 	#else
 		cout << "This is debug" << endl;
 	#endif
+	*/
 }
 
 S3::~S3( void )
@@ -138,16 +140,16 @@ void S3::GrayScale( __in Image *pOrigin, __out Image *pGrayImage )
 
 void S3::GrayToResult( __in int fourierReduction, __in bool skin, __in Image *pGrayImage, __out Image *pResultImage )
 {
-	std::clock_t clock;
-	int start = std::clock();
-	int duration;
+	//std::clock_t clock;
+	//int start = std::clock();
+	//int duration = 0;
 
 	/* Create S1Image from GrayScale */
 	if ( m_resultType == ResultType::S1Image )
 	{
 		S1 s1Algorithm;
 		s1Algorithm.CreateS1( fourierReduction, skin,  pGrayImage, pResultImage );
-		duration = ( std::clock() - start ); cout << "S1 : " << duration << endl; start = std::clock();
+		//duration = ( std::clock() - start ); cout << "S1 : " << duration << endl; start = std::clock();
 		_ASSERTE( _CrtCheckMemory() );
 	}
 	
@@ -156,7 +158,7 @@ void S3::GrayToResult( __in int fourierReduction, __in bool skin, __in Image *pG
 	{
 		S2 s2Algorithm;
 		s2Algorithm.CreateS2( pGrayImage, pResultImage );
-		duration = ( std::clock() - start ); cout << "S2 : " << duration << endl; start = std::clock();
+		//duration = ( std::clock() - start ); cout << "S2 : " << duration << endl; start = std::clock();
 		_ASSERTE( _CrtCheckMemory() );
 	}
 
@@ -167,14 +169,14 @@ void S3::GrayToResult( __in int fourierReduction, __in bool skin, __in Image *pG
 
 		S1 s1Algorithm;
 		s1Algorithm.CreateS1( fourierReduction, skin, pGrayImage, pResultImage );
-		duration = ( std::clock() - start ); cout << "S1 : " << duration << endl; start = std::clock();
+		//duration = ( std::clock() - start ); cout << "S1 : " << duration << endl; start = std::clock();
 
 		S2 s2Algorithm;
 		s2Algorithm.CreateS2( pGrayImage, pTempImage );
-		duration = ( std::clock() - start ); cout << "S2 : " << duration << endl; start = std::clock();
+		//duration = ( std::clock() - start ); cout << "S2 : " << duration << endl; start = std::clock();
 
 		Merge( pTempImage, pResultImage );
-		duration = ( std::clock() - start ); cout << "Merge : " << duration << endl; start = std::clock();
+		//duration = ( std::clock() - start ); cout << "Merge : " << duration << endl; start = std::clock();
 
 		delete pTempImage;
 		_ASSERTE( _CrtCheckMemory() );
